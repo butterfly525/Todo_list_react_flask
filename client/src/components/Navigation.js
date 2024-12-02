@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
-
+import '../styles/Navigation.css'; // Импортируем стили
 const Navigation = () => {
     const navigate = useNavigate(); // Получаем функцию navigate
 
@@ -13,20 +13,20 @@ const Navigation = () => {
     };
     
     const handleMain = () => {
-        navigate('/'); // Переход на страницу авторизации
+        navigate('/'); // Переход на главную страницу
     };
 
     return (
-        <nav>
-            <ul>
+        <nav className="navigation">
+            <ul className="navigation-list">
                 <li>
-                    <button onClick={handleMain}>Главная страница</button>
+                    <button className="navigation-button" onClick={handleMain}>Главная страница</button>
                 </li>
                 <li>
-                    <button onClick={handleAddTask}>Добавить задачу</button>
+                    <button className="navigation-button" onClick={handleAddTask}>Добавить задачу</button>
                 </li>
                 <li>
-                    <button onClick={handleLogin}>Авторизоваться</button>
+                    <button className="navigation-button" onClick={handleLogin}>Авторизоваться</button>
                 </li>
             </ul>
         </nav>

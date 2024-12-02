@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addTask } from '../redux/actions';
+import { addTask } from '../store/actions';
+import '../styles/Forms.css';
 
 const TaskForm = () => {
     const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ const TaskForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="form-container" onSubmit={handleSubmit}>
             <input
                 type="text"
                 name="username"

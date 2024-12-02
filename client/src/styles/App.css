@@ -1,0 +1,24 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#root{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.container{
+    max-width: 800px;
+    width: 90%;
+    text-align: center; 
+}
+
+.centered-title{
+    margin-bottom: 20px;
+
+}

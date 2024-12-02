@@ -1,9 +1,11 @@
 import React from 'react';
 import TaskForm from './TaskForm';
+
+
 const AddTaskPage = () => {
     return (
-        <div>
-            <h1>Создание задачи</h1>
+        <div className='container'>
+            <h1 className='centered-title'>Создание задачи</h1>
             <TaskForm />
         </div>
     );

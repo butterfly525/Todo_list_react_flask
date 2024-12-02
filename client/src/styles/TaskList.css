@@ -1,0 +1,44 @@
+.tasks{
+    height: 300px;
+}
+
+.task-list {
+    list-style-type: none; 
+    padding: 0; 
+}
+
+.task-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+.task-item {
+    font-size: 18px; 
+    background-color: #f9f9f9;
+    border: 1px solid #ddd; 
+    border-radius: 4px; 
+    padding: 15px; 
+    margin-bottom: 10px; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+.task-username {
+    font-weight: bold;
+}
+
+.task-email {
+    color: #555; 
+}
+
+.task-status {
+    font-size: 16px; 
+    color: #aaa; 
+    align-self: flex-end; 
+}
+
+.task-text {
+    margin-top: 10px; 
+    font-size: 20px; 
+    align-self: start;
+}
