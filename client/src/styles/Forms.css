@@ -26,6 +26,7 @@
     border-radius: 4px; 
     cursor: pointer;
     font-size: 16px;
+    margin-bottom: 10px;
 }
 
 .form-container button:hover {

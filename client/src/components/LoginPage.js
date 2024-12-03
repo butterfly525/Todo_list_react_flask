@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import '../styles/Forms.css'; // Импортируем стили, если они находятся в этом файле
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
+import '../styles/Forms.css';
 import { loginAction } from '../store/authReducer';
+
 const LoginPage = () => {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-    const isauth = useSelector(state => state.auth.isAuthenticated);
-    console.log(isauth);
+
+
     const [formData, setFormData] = useState({
         username: '',
         password: ''
@@ -16,32 +19,29 @@ const LoginPage = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Логика авторизации
-        fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        })
-        .then(response => {
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
             if (!response.ok) {
                 throw new Error('Неверное имя пользователя или пароль.');
             }
-            return response.json();
-        })
-        .then(data => {
-            // Диспатчим действие для обновления состояния
+
+            const data = await response.json();
+            localStorage.setItem('token', data.access_token);
             dispatch(loginAction({ token: data.access_token }));
-            // Сброс формы после успешной отправки
             setFormData({ username: '', password: '' });
-        })
-        .catch(error => {
+            navigate('/');
+        } catch (error) {
             console.error('Ошибка:', error.message);
-            alert(error.message); // Показываем сообщение об ошибке пользователю
-        });
+        }
     };
 
     return (

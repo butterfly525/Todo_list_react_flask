@@ -1,7 +1,13 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Импортируем useNavigate
-import '../styles/Navigation.css'; // Импортируем стили
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
+import '../styles/Navigation.css'; 
+
+import { logoutAction } from '../store/authReducer';
 const Navigation = () => {
+    const dispatch = useDispatch();
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    
     const navigate = useNavigate(); // Получаем функцию navigate
 
     const handleAddTask = () => {
@@ -11,7 +17,14 @@ const Navigation = () => {
     const handleLogin = () => {
         navigate('/login'); // Переход на страницу авторизации
     };
-    
+
+    const handleLogout = () => {
+        // Удаляем токен из localStorage
+        localStorage.removeItem('token');
+        dispatch(logoutAction());
+        navigate('/'); 
+    };
+
     const handleMain = () => {
         navigate('/'); // Переход на главную страницу
     };
@@ -25,9 +38,14 @@ const Navigation = () => {
                 <li>
                     <button className="navigation-button" onClick={handleAddTask}>Добавить задачу</button>
                 </li>
-                <li>
-                    <button className="navigation-button" onClick={handleLogin}>Авторизоваться</button>
-                </li>
+                {isAuthenticated
+                    ? (<li>
+                        <button className="navigation-button" onClick={handleLogout}>Выйти</button>
+                    </li>)
+                    : (<li>
+                        <button className="navigation-button" onClick={handleLogin}>Авторизоваться</button>
+                    </li>)
+                }
             </ul>
         </nav>
     );

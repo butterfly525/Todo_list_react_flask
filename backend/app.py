@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Task, User
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 
 app = Flask(__name__)
@@ -39,7 +39,15 @@ def login():
 
     access_token = create_access_token(identity=username)
     return jsonify(access_token=access_token), 200
-# Получение всех задач
+
+
+@app.route('/api/validate-token', methods=['POST'])
+@jwt_required()
+def validate_token():
+    # Получаем информацию о пользователе из токена
+    current_user = get_jwt_identity()
+    # Возвращаем успешный ответ с информацией о пользователе
+    return jsonify({"message": "Токен действителен.", "user": current_user}), 200
 
 
 @app.route('/api/tasks', methods=['GET'])
@@ -68,16 +76,31 @@ def add_task():
 
 # Редактирование задачи
 
-
-@app.route('/api/tasks/<int:id>', methods=['PUT'])
-def update_task(id):
-    task = Task.query.get_or_404(id)
+@app.route('/api/tasks/<int:task_id>', methods=['PUT'])
+@jwt_required()
+def update_task(task_id):
     data = request.get_json()
-    task.text = data.get('text', task.text)
-    task.completed = data.get('completed', task.completed)
-    db.session.commit()
-    return jsonify(task.to_dict())
+    
+    # Получаем новые значения из запроса
+    new_text = data.get('text')
+    new_completed_status = data.get('completed')  # Получаем новый статус завершенности
 
+    # Находим задачу по ID
+    task = Task.query.get(task_id)
+    
+    if task:
+        # Обновляем текст задачи, если он был передан
+        if new_text is not None:  # Проверяем, что новое значение текста не None
+            task.text = new_text
+        
+        # Обновляем статус завершенности задачи, если он был передан
+        if new_completed_status is not None:  # Проверяем, что новое значение статуса не None
+            task.completed = new_completed_status
+
+        db.session.commit()  # Сохраняем изменения в базе данных
+        return jsonify({"message": "Задача обновлена.", "task": task.to_dict()}), 200
+    
+    return jsonify({"message": "Задача не найдена."}), 404
 # Удаление задачи
 
 

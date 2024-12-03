@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { addTask } from '../store/actions';
 import '../styles/Forms.css';
-
+import Notification from './Notification';
 const TaskForm = () => {
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         text: ''
     });
+    const [notification, setNotification] = useState('');
     const dispatch = useDispatch();
     // Обработчик изменения полей формы
     const handleChange = (e) => {
@@ -21,8 +22,13 @@ const TaskForm = () => {
     // Обработчик отправки формы
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await dispatch(addTask(formData)); // Диспатчим действие для добавления задачи
+        dispatch(addTask(formData)); // Диспатчим действие для добавления задачи
+        setNotification({ message: 'Задача успешно добавлена!', type: 'success' });
         resetForm(); // Сбрасываем форму после успешного добавления
+          // Сбрасываем уведомление через 3 секунды
+        setTimeout(() => {
+            setNotification('');
+        }, 3000);
     };
 
     // Сброс формы
@@ -60,6 +66,7 @@ const TaskForm = () => {
                 required
             />
             <button type="submit">Добавить задачу</button>
+            <Notification message={notification.message} type={notification.type} />
         </form>
     );
 };

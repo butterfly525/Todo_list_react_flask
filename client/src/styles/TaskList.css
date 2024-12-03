@@ -1,5 +1,8 @@
 .tasks{
-    height: 300px;
+    height: 95%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .task-list {
@@ -38,7 +41,30 @@
 }
 
 .task-text {
-    margin-top: 10px; 
     font-size: 20px; 
-    align-self: start;
+}
+
+.task-block{
+    margin-top: 10px; 
+    display: flex;
+    justify-content: space-between;
+}
+
+.edit-btn{
+    background-color: #007bff;
+    color: white; 
+    border: none; 
+    padding: 8px 12px;
+    border-radius: 4px; 
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.edit-btn:hover{
+    background-color: #0056b3;
+}
+
+.status-block{
+    display: flex;
+    flex-direction: column;
 }

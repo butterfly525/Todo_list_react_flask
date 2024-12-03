@@ -1,0 +1,15 @@
+.notification {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 4px;
+    color: #fff;
+    display: inline-block;
+}
+
+.notification.success {
+    background-color: #4caf50; /* Зеленый для успеха */
+}
+
+.notification.error {
+    background-color: #f44336; /* Красный для ошибок */
+}
