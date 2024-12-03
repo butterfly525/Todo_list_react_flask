@@ -1,19 +1,45 @@
 import { addTaskAction, setTaskAction, updateTaskAction } from "./taskReducer";
+import { setNotificationAction } from "./notificationReducer"; // Импортируем действие для уведомлений
+import { loginAction } from './authReducer';
+export const loginUser = (formData) => {
+    return async (dispatch) => {
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
 
+            if (!response.ok) {
+                throw new Error('Неверное имя пользователя или пароль.');
+            }
 
+            const data = await response.json();
+            localStorage.setItem('token', data.access_token);
+            dispatch(loginAction({ token: data.access_token }));
+            dispatch(setNotificationAction({ message: 'Успешный вход!', type: 'success' }));
+            return true; // Успешный вход
+        } catch (error) {
+            console.error('Ошибка:', error.message);
+            dispatch(setNotificationAction({ message: error.message, type: 'error' }));
+            return false; // Ошибка входа
+        }
+    };
+};
+
+// Функция для получения задач
 export const fetchTasks = (page) => {
-
     return (dispatch) => {
         fetch(`/api/tasks?page=${page}`)
             .then((response) => {
-                // Проверяем, успешен ли ответ
                 if (!response.ok) {
                     throw new Error('Сеть ответила с ошибкой: ' + response.status);
                 }
-                return response.json(); // Преобразуем ответ в JSON
+                return response.json();
             })
             .then((data) => {
-                // Диспатчим действие для установки задач
                 dispatch(setTaskAction({
                     tasks: data.tasks,
                     pages: data.pages,
@@ -21,88 +47,83 @@ export const fetchTasks = (page) => {
                 }));
             })
             .catch((error) => {
-                console.error("Ошибка при получении задач:", error);
+                dispatch(setNotificationAction({ message: 'Не удалось получить задачи (' + error + ').', type: 'error' }));
             });
-
     };
 };
 
-// Действие для добавления новой задачи
+// Функция для добавления новой задачи
 export const addTask = (newTask) => {
     return (dispatch) => {
-        // Выполняем POST-запрос с помощью fetch
-        fetch('/api/tasks', {
+        return fetch('/api/tasks', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Указываем тип контента
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify(newTask), // Преобразуем объект в строку JSON
+            body: JSON.stringify(newTask),
         })
             .then((response) => {
-                // Проверяем, успешен ли ответ
                 if (!response.ok) {
                     throw new Error('Сеть ответила с ошибкой: ' + response.status);
                 }
-                return response.json(); // Преобразуем ответ в JSON
+                return response.json();
             })
             .then((data) => {
-                // Диспатчим действие для добавления задачи
                 dispatch(addTaskAction(data));
+                dispatch(setNotificationAction({ message: 'Задача успешно добавлена!', type: 'success' }));
             })
             .catch((error) => {
-                console.error("Ошибка при добавлении задачи:", error);
+                dispatch(setNotificationAction({ message: 'Не удалось добавить задачу (' + error + ').', type: 'error' }));
             });
     };
 };
 
+// Функция для обновления статуса задачи
 export const updateStatusTask = (taskId) => {
     return (dispatch) => {
-        // Отправка запроса на сервер для обновления статуса задачи
-        const response = fetch(`/api/tasks/${taskId}`, {
+        return fetch(`/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
-            body: JSON.stringify({ completed: true }), // Устанавливаем статус выполненной задачи
-        });
-
-        if (response.ok) {
-            // Обновляем задачу в Redux
-            dispatch(updateTaskAction({ id: taskId, text: undefined, completed: true })); // Передаем ID задачи и новый статус
-        } else {
-            console.error('Ошибка при обновлении статуса задачи');
-        }
-    }
-
+            body: JSON.stringify({ completed: true }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    dispatch(updateTaskAction({ id: taskId, text: undefined, completed: true }));
+                    dispatch(setNotificationAction({ message: 'Статус задачи успешно обновлён!', type: 'success' }));
+                } else {
+                    throw new Error('Ошибка при обновлении статуса задачи');
+                }
+            })
+            .catch(error => {
+                dispatch(setNotificationAction({ message: 'Не удалось обновить статус задачи ('+error+').', type: 'error' }));
+            });
+    };
 };
 
+// Функция для обновления текста задачи
 export const updateTextTask = (taskId, newText) => {
     return (dispatch) => {
-         // Отправка обновленных данных на сервер
-         const response = fetch(`/api/tasks/${taskId}`, {
+        return fetch(`/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`,
             },
             body: JSON.stringify({ text: newText }),
-        });
-
-        if (response.ok) {
-            // Обновляем задачу в Redux
-            dispatch(updateTaskAction({ id: taskId, text: newText, completed: undefined }));
-            
-            // setNotification({ message: 'Задача успешно изменена!', type: 'success' });
-            // setTimeout(() => {
-            //     setNotification('');
-            // }, 3000);
-        } else {
-            // setNotification({ message: 'Ошибка при обновлении задачи!', type: 'error' });
-            // setTimeout(() => {
-            //     setNotification('');
-            // }, 3000);
-        }
-    }
-
+        })
+            .then(response => {
+                if (response.ok) {
+                    dispatch(updateTaskAction({ id: taskId, text: newText, completed: undefined }));
+                    dispatch(setNotificationAction({ message: 'Задача успешно изменена!', type: 'success' }));
+                } else {
+                    throw new Error('Ошибка при обновлении задачи');
+                }
+            })
+            .catch(error => {
+                dispatch(setNotificationAction({ message: 'Не удалось изменить задачу ('+error+').', type: 'error' }));
+            });
+    };
 };

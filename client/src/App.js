@@ -1,4 +1,5 @@
 import './styles/App.css';
+import './styles/Notification.css';
 import AddTaskPage from './components/AddTaskPage';
 import LoginPage from './components/LoginPage';
 import Navigation from './components/Navigation';
@@ -7,7 +8,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import checkTokenValidity from './components/CheckToken'
-
+import Notification from './components/Notification';
 
 const App = () => {
   
@@ -30,6 +31,7 @@ const App = () => {
         <Route path="/add-task" element={<AddTaskPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
+      <Notification />
     </Router>
 
   );

@@ -1,8 +1,9 @@
+import '../styles/Forms.css';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
-import '../styles/Forms.css';
-import { loginAction } from '../store/authReducer';
+import { loginUser } from '../store/actions';
+
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -21,26 +22,10 @@ const LoginPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-            
-            if (!response.ok) {
-                throw new Error('Неверное имя пользователя или пароль.');
-            }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.access_token);
-            dispatch(loginAction({ token: data.access_token }));
+        const success = await dispatch(loginUser(formData));
+        if (success) {
             setFormData({ username: '', password: '' });
             navigate('/');
-        } catch (error) {
-            console.error('Ошибка:', error.message);
         }
     };
 

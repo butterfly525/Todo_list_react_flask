@@ -2,7 +2,6 @@
     height: 95%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
 
 .task-list {
@@ -67,4 +66,8 @@
 .status-block{
     display: flex;
     flex-direction: column;
+}
+
+.sort-buttons{
+    margin-bottom: 20px;
 }

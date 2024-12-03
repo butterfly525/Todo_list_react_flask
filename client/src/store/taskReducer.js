@@ -46,16 +46,16 @@ export const taskReducer = (state = initialState, action) => {
           task.id === action.payload.id
             ? {
               ...task,
-              text: action.payload.text !== undefined ? action.payload.text : task.text, // Обновляем текст задачи, если он передан
-              completed: action.payload.completed !== undefined ? action.payload.completed : task.completed // Обновляем статус задачи
+              text: action.payload.text !== undefined ? action.payload.text : task.text, 
+              completed: action.payload.completed !== undefined ? action.payload.completed : task.completed 
             }
-            : task // Возвращаем неизменённую задачу
+            : task 
         )
       };
     case SET_SORT_BY:
       return {
         ...state,
-        sortBy: action.payload, // Обновляем критерий сортировки
+        sortBy: action.payload, 
       };
     case SET_CURRENT_PAGE:
       return {

@@ -4,8 +4,9 @@ import SortButtons from './SortButtons';
 import Pagination from './Pagination';
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
-import Notification from './Notification';
 import { updateStatusTask, updateTextTask } from '../store/actions';
+
+
 const TaskList = () => {
 
     const tasks = useSelector(state => state.task.tasks);
@@ -15,50 +16,29 @@ const TaskList = () => {
     const [taskId, setcurrentTaskId] = useState(null);
     const [newText, setNewText] = useState('');
     const [usernameTask, setUserNameTask] = useState('');
-    // const [notification, setNotification] = useState('');
 
-    const handleEdit = (task) => {
+    function handleEdit(task) {
         setIsEditing(true);
         setcurrentTaskId(task.id);
         setNewText(task.text); // Устанавливаем текущее значение текста задачи
         setUserNameTask(task.username);
-    };
+    }
 
     const handleChange = (e) => {
         setNewText(e.target.value); // Обновляем текст задачи
-
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (taskId) {
-            dispatch(updateTextTask(taskId, newText));
-            setIsEditing(false); // Закрываем форму редактирования
-            setcurrentTaskId(null); // Сбрасываем текущее задание
-        }
-
+        dispatch(updateTextTask(taskId, newText));
+        setIsEditing(false); // Закрываем форму редактирования
+        setcurrentTaskId(null); // Сбрасываем текущее задание
     };
 
     const handleCheckboxChange = (taskId) => {
         dispatch(updateStatusTask(taskId));
     };
-    // const sortBy = useSelector(state => state.task.sortBy);
 
-    // const sortTasks = (tasks, sortBy) => {
-    //     const [field, order] = sortBy.split(' ');
-    //     return tasks.slice().sort((a, b) => {
-    //         const aField = a[field] || ""; // Используем пустую строку, если значение не определено
-    //         const bField = b[field] || ""; // Используем пустую строку, если значение не определено
-
-    //         if (order === 'asc') {
-    //             return aField.localeCompare(bField);
-    //         } else {
-    //             return bField.localeCompare(aField);
-    //         }
-    //     });
-    // };
-
-    // const sortedTasks = sortTasks(tasks, sortBy);
     return (
         <div className="tasks">
             <SortButtons />
@@ -102,7 +82,7 @@ const TaskList = () => {
                     />
                     <button type="submit">Сохранить</button>
                     <button type="button" onClick={() => setIsEditing(false)}>Отмена</button>
-                    {/* <Notification message={notification.message} type={notification.type} /> */}
+
                 </form>
             )}
 
