@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import db, Task, User
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
-
+from sqlalchemy import func
 
 app = Flask(__name__)
 
@@ -53,8 +53,24 @@ def validate_token():
 @app.route('/api/tasks', methods=['GET'])
 def get_tasks():
     page = request.args.get('page', 1, type=int)
+    sort_by = request.args.get('sortBy', 'default')  # Получаем параметр сортировки
+
+    query = Task.query
+        # Применяем сортировку в зависимости от параметра
+    if sort_by == 'username asc':
+        query = query.order_by(func.lower(Task.username).asc())
+    elif sort_by == 'username desc':
+        query = query.order_by(func.lower(Task.username).desc())
+    elif sort_by == 'email asc':
+        query = query.order_by(func.lower(Task.email).asc())
+    elif sort_by == 'email desc':
+        query = query.order_by(func.lower(Task.email).desc())
+    elif sort_by == 'text asc':
+        query = query.order_by(func.lower(Task.text).asc())
+    elif sort_by == 'text desc':
+        query = query.order_by(func.lower(Task.text).desc())
     # Пагинация по 3 задачи на страницу
-    tasks = Task.query.paginate(page=page, per_page=3)
+    tasks = query.paginate(page=page, per_page=3)
     return jsonify({
         'tasks': [task.to_dict() for task in tasks.items],
         'pages': tasks.pages,
