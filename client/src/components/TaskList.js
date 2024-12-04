@@ -1,39 +1,23 @@
 import '../styles/TaskList.css';
 import '../styles/Forms.css';
-import SortButtons from './SortButtons';
-import Pagination from './Pagination';
+import { setIdEditingTaskAction, setTextEditingTaskAction, setUsernameEditingTaskAction  } from '../store/taskReducer';
 import { useSelector, useDispatch } from 'react-redux';
-import { useState } from 'react';
-import { updateStatusTask, updateTextTask } from '../store/actions';
-
+import { updateStatusTask } from '../store/actions';
+import EditTaskForm from './EditTaskForm';
+import Pagination from './Pagination';
 
 const TaskList = () => {
-
+    const dispatch = useDispatch();
     const tasks = useSelector(state => state.task.tasks);
     const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-    const dispatch = useDispatch();
-    const [isEditing, setIsEditing] = useState(false);
-    const [taskId, setcurrentTaskId] = useState(null);
-    const [newText, setNewText] = useState('');
-    const [usernameTask, setUserNameTask] = useState('');
+    const editingTaskId = useSelector(state => state.task.editingTaskId);
+ 
 
     function handleEdit(task) {
-        setIsEditing(true);
-        setcurrentTaskId(task.id);
-        setNewText(task.text); // Устанавливаем текущее значение текста задачи
-        setUserNameTask(task.username);
+        dispatch(setIdEditingTaskAction(task.id));
+        dispatch(setTextEditingTaskAction(task.text));
+        dispatch(setUsernameEditingTaskAction(task.username));
     }
-
-    const handleChange = (e) => {
-        setNewText(e.target.value); // Обновляем текст задачи
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        dispatch(updateTextTask(taskId, newText));
-        setIsEditing(false); // Закрываем форму редактирования
-        setcurrentTaskId(null); // Сбрасываем текущее задание
-    };
 
     const handleCheckboxChange = (taskId) => {
         dispatch(updateStatusTask(taskId));
@@ -41,7 +25,7 @@ const TaskList = () => {
 
     return (
         <div className="tasks">
-            <SortButtons />
+
             <ul className="task-list">
                 {Array.isArray(tasks) && tasks.map(task => (
                     <li key={task.id} className={`task-item ${task.completed ? 'completed' : 'not-completed'}`}>
@@ -71,21 +55,9 @@ const TaskList = () => {
                     </li>
                 ))}
             </ul>
-            {isEditing && taskId && (
-                <form className="form-container" onSubmit={handleSubmit}>
-                    <label htmlFor="task-text">Редактирование задачи пользователя {usernameTask}:</label>
-                    <textarea
-                        type="text"
-                        id="task-text"
-                        value={newText}
-                        onChange={handleChange}
-                    />
-                    <button type="submit">Сохранить</button>
-                    <button type="button" onClick={() => setIsEditing(false)}>Отмена</button>
-
-                </form>
+            {editingTaskId && (
+                <EditTaskForm />
             )}
-
             <Pagination />
         </div>
     );

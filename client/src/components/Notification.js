@@ -19,8 +19,6 @@ const Notification = () => {
     }, [notification.message, dispatch]);
     if (!notification.message) return null;
 
-
-
     return (
         <div className={`notification ${notification.type}`}>
             {notification.message}

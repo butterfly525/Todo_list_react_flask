@@ -71,3 +71,8 @@
 .sort-buttons{
     margin-bottom: 20px;
 }
+
+.sort-buttons button{
+    font-weight: bold;
+    margin: 0 5px;
+}

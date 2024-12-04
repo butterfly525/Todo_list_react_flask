@@ -1,38 +1,40 @@
 import { addTaskAction, setTaskAction, updateTaskAction } from "./taskReducer";
-import { setNotificationAction } from "./notificationReducer"; // Импортируем действие для уведомлений
+import { setNotificationAction } from "./notificationReducer"; 
 import { loginAction } from './authReducer';
+
+
 export const loginUser = (formData) => {
-    return async (dispatch) => {
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
+    return (dispatch) => {
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Сеть ответила с ошибкой: ' + response.status);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                localStorage.setItem('token', data.access_token);
+                dispatch(loginAction({ token: data.access_token }));
+                dispatch(setNotificationAction({ message: 'Успешный вход!', type: 'success' }));
+            })
+
+            .catch((error) => {
+                dispatch(setNotificationAction({ message: 'Не удалось войти (' + error + ').', type: 'error' }));
             });
 
-            if (!response.ok) {
-                throw new Error('Неверное имя пользователя или пароль.');
-            }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.access_token);
-            dispatch(loginAction({ token: data.access_token }));
-            dispatch(setNotificationAction({ message: 'Успешный вход!', type: 'success' }));
-            return true; // Успешный вход
-        } catch (error) {
-            console.error('Ошибка:', error.message);
-            dispatch(setNotificationAction({ message: error.message, type: 'error' }));
-            return false; // Ошибка входа
-        }
     };
 };
 
 // Функция для получения задач
-export const fetchTasks = (page) => {
+export const fetchTasks = (page, sortBy) => {
     return (dispatch) => {
-        fetch(`/api/tasks?page=${page}`)
+        fetch(`/api/tasks?page=${page}&sortBy=${sortBy}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Сеть ответила с ошибкой: ' + response.status);
@@ -55,7 +57,7 @@ export const fetchTasks = (page) => {
 // Функция для добавления новой задачи
 export const addTask = (newTask) => {
     return (dispatch) => {
-        return fetch('/api/tasks', {
+        fetch('/api/tasks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ export const addTask = (newTask) => {
 // Функция для обновления статуса задачи
 export const updateStatusTask = (taskId) => {
     return (dispatch) => {
-        return fetch(`/api/tasks/${taskId}`, {
+        fetch(`/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -98,15 +100,16 @@ export const updateStatusTask = (taskId) => {
                 }
             })
             .catch(error => {
-                dispatch(setNotificationAction({ message: 'Не удалось обновить статус задачи ('+error+').', type: 'error' }));
+                dispatch(setNotificationAction({ message: 'Не удалось обновить статус задачи (' + error + ').', type: 'error' }));
             });
     };
 };
 
 // Функция для обновления текста задачи
 export const updateTextTask = (taskId, newText) => {
+
     return (dispatch) => {
-        return fetch(`/api/tasks/${taskId}`, {
+        fetch(`/api/tasks/${taskId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -123,7 +126,7 @@ export const updateTextTask = (taskId, newText) => {
                 }
             })
             .catch(error => {
-                dispatch(setNotificationAction({ message: 'Не удалось изменить задачу ('+error+').', type: 'error' }));
+                dispatch(setNotificationAction({ message: 'Не удалось изменить задачу (' + error + ').', type: 'error' }));
             });
     };
 };

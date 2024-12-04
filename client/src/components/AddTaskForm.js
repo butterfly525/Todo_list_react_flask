@@ -1,39 +1,50 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { addTask } from '../store/actions';
+import { clearEditingFieldsAction, setTextEditingTaskAction, setUsernameEditingTaskAction, setUserEmailEditingTaskAction } from '../store/taskReducer'
 import '../styles/Forms.css';
 
 const TaskForm = () => {
-    const [formData, setFormData] = useState({
-        username: '',
-        email: '',
-        text: ''
-    });
-    // const [notification, setNotification] = useState('');
     const dispatch = useDispatch();
+    const newText = useSelector(state => state.task.newText);
+    const usernameTask = useSelector(state => state.task.usernameTask);
+    const userEmail = useSelector(state => state.task.userEmail);
+
     // Обработчик изменения полей формы
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+
+        switch (name) {
+            case 'username':
+                dispatch(setUsernameEditingTaskAction(value));
+                break;
+            case 'email':
+                dispatch(setUserEmailEditingTaskAction(value));
+                break;
+            case 'text':
+                dispatch(setTextEditingTaskAction(value));
+                break;
+            default:
+                console.log(`Unhandled input: ${name}`);
+        }
     };
     // Обработчик отправки формы
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
+
+        const formData = {
+            username: usernameTask,
+            email: userEmail,
+            text: newText,
+        };
+
         dispatch(addTask(formData));
-        resetForm(); // Сбрасываем форму после успешного добавления
-        
+        resetForm();
     };
 
     // Сброс формы
     const resetForm = () => {
-        setFormData({
-            username: '',
-            email: '',
-            text: ''
-        });
+        dispatch(clearEditingFieldsAction());
     };
 
     return (
@@ -42,7 +53,7 @@ const TaskForm = () => {
                 type="text"
                 name="username"
                 placeholder="Имя пользователя"
-                value={formData.username}
+                value={usernameTask}
                 onChange={handleChange}
                 required
             />
@@ -50,19 +61,18 @@ const TaskForm = () => {
                 type="email"
                 name="email"
                 placeholder="Email"
-                value={formData.email}
+                value={userEmail}
                 onChange={handleChange}
                 required
             />
             <textarea
                 name="text"
                 placeholder="Описание задачи"
-                value={formData.text}
+                value={newText}
                 onChange={handleChange}
                 required
             />
             <button type="submit">Добавить задачу</button>
-            {/* <Notification message={notification.message} type={notification.type} /> */}
         </form>
     );
 };

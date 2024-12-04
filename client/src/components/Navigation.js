@@ -19,7 +19,6 @@ const Navigation = () => {
     };
 
     const handleLogout = () => {
-        // Удаляем токен из localStorage
         localStorage.removeItem('token');
         dispatch(logoutAction());
         navigate('/'); 

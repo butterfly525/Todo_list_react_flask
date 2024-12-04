@@ -1,14 +1,13 @@
 import '../styles/Forms.css';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../store/actions';
 
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
 
     const [formData, setFormData] = useState({
         username: '',
@@ -20,13 +19,11 @@ const LoginPage = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const success = await dispatch(loginUser(formData));
-        if (success) {
-            setFormData({ username: '', password: '' });
-            navigate('/');
-        }
+        dispatch(loginUser(formData));
+        setFormData({ username: '', password: '' });
+        navigate('/');
     };
 
     return (

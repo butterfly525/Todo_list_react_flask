@@ -15,13 +15,13 @@ const SortButtons = () => {
 
     return (
         <div className="sort-buttons">
-            <button onClick={() => handleSortChange('username')}>
+            <button className='edit-btn' onClick={() => handleSortChange('username')}>
                 Сортировать по имени {sortBy === 'username asc' ? '↑' : '↓'}
             </button>
-            <button onClick={() => handleSortChange('email')}>
+            <button className='edit-btn' onClick={() => handleSortChange('email')}>
                 Сортировать по email {sortBy === 'email asc' ? '↑' : '↓'}
             </button>
-            <button onClick={() => handleSortChange('text')}>
+            <button className='edit-btn' onClick={() => handleSortChange('text')}>
                 Сортировать по тексту {sortBy === 'text asc' ? '↑' : '↓'}
             </button>
         </div>
